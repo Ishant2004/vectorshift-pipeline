@@ -7,6 +7,10 @@ counts and whether the pipeline is a valid DAG.
 Built as a React frontend (React Flow + Zustand + Tailwind CSS) and a modular
 FastAPI backend.
 
+> For a deep dive into how it all fits together — data flow, the node
+> abstraction, and what happens on each user action — see
+> [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## Live demo
 
 - **Frontend (Vercel):** https://vectorshift-pipeline-tau.vercel.app
