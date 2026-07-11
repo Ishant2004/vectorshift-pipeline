@@ -1,0 +1,10 @@
+# Ruff configuration for the backend.
+target-version = "py39"
+line-length = 100
+
+# Don't lint the virtual environment.
+extend-exclude = ["venv"]
+
+[lint]
+# pycodestyle errors (E), pyflakes (F), and isort (I).
+select = ["E", "F", "I"]
