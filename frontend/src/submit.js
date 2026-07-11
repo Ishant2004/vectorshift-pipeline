@@ -4,7 +4,10 @@ import { useState } from 'react';
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
 
-const API_URL = 'http://localhost:8000/pipelines/parse';
+// Backend base URL comes from the environment (REACT_APP_API_URL).
+// Local dev falls back to localhost; on Vercel this is set to the Railway URL.
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = `${API_BASE}/pipelines/parse`;
 
 const selector = (state) => ({
   nodes: state.nodes,
