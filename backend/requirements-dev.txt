@@ -1,0 +1,10 @@
+# Development / test dependencies. Install with:
+#   pip install -r requirements-dev.txt
+#
+# Run the test suite with:
+#   pytest
+
+-r requirements.txt
+
+pytest==8.4.2
+httpx==0.28.1
