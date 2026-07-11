@@ -7,6 +7,11 @@ counts and whether the pipeline is a valid DAG.
 Built as a React frontend (React Flow + Zustand + Tailwind CSS) and a modular
 FastAPI backend.
 
+## Live demo
+
+- **Frontend (Vercel):** https://vectorshift-pipeline-tau.vercel.app
+- **Backend (Railway):** https://vectorshift-pipeline-production.up.railway.app
+
 ---
 
 ## Highlights
@@ -24,18 +29,23 @@ FastAPI backend.
   handle for every `{{ variableName }}` reference.
 - **Backend integration** — the Submit button POSTs the pipeline; the backend
   returns `{ num_nodes, num_edges, is_dag }`, surfaced in a friendly alert.
-- **Test suites** — pytest for the backend, Jest + React Testing Library for the
-  frontend.
+- **Env-driven config** — one codebase runs locally and in production; the API
+  URL and CORS origins come from environment variables.
+- **Tested & linted in CI** — pytest + Jest run on every push; ruff + ESLint
+  gate pull requests via GitHub Actions.
 
 ---
 
 ## Tech stack
 
-| Layer     | Tools                                                        |
-| --------- | ----------------------------------------------------------- |
-| Frontend  | React (Create React App), React Flow, Zustand, Tailwind CSS |
-| Backend   | FastAPI, Uvicorn, Pydantic                                  |
-| Testing   | Jest + React Testing Library, pytest + httpx                |
+| Layer      | Tools                                                        |
+| ---------- | ----------------------------------------------------------- |
+| Frontend   | React (Create React App), React Flow, Zustand, Tailwind CSS |
+| Backend    | FastAPI, Uvicorn, Pydantic                                  |
+| Testing    | Jest + React Testing Library, pytest + httpx                |
+| Linting    | ESLint (react-app config), Ruff                             |
+| CI/CD      | GitHub Actions                                              |
+| Deployment | Vercel (frontend), Railway (backend)                        |
 
 ---
 
@@ -43,7 +53,9 @@ FastAPI backend.
 
 ```
 .
-├── frontend/                     # React app
+├── .github/workflows/ci.yml      # CI: tests on every push, lint on PRs
+│
+├── frontend/                     # React app  → deployed to Vercel
 │   ├── src/
 │   │   ├── App.js                # app shell / layout
 │   │   ├── toolbar.js            # draggable node palette
@@ -58,17 +70,23 @@ FastAPI backend.
 │   │   │   ├── inputNode.js  outputNode.js  textNode.js  llmNode.js
 │   │   │   └── filterNode.js  mathNode.js  noteNode.js  apiNode.js  delayNode.js
 │   │   └── __tests__/ , nodes/__tests__/
+│   ├── .env.example              # frontend env template
+│   ├── vercel.json               # Vercel build/SPA config
 │   └── package.json
 │
-└── backend/                      # FastAPI app
+└── backend/                      # FastAPI app  → deployed to Railway
     ├── main.py                   # app wiring + health check route
+    ├── config.py                 # env-driven settings (dotenv)
     ├── middleware.py             # CORS setup
     ├── routes.py                 # /pipelines router
     ├── services.py               # business logic (parse_pipeline)
     ├── dag.py                    # is_dag() — Kahn's algorithm
     ├── models.py                 # request + per-route response models
     ├── requirements.txt          # runtime deps
-    ├── requirements-dev.txt      # test deps (pytest, httpx)
+    ├── requirements-dev.txt      # test/lint deps (pytest, httpx, ruff)
+    ├── ruff.toml                 # lint config
+    ├── Procfile                  # Railway start command
+    ├── .env.example              # backend env template
     └── tests/                    # pytest suite
 ```
 
@@ -85,6 +103,7 @@ cd backend
 python -m venv venv
 source venv/bin/activate           # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+cp .env.example .env               # local settings
 uvicorn main:app --reload          # serves http://localhost:8000
 ```
 
@@ -93,6 +112,7 @@ uvicorn main:app --reload          # serves http://localhost:8000
 ```bash
 cd frontend
 npm install
+cp .env.example .env               # points at http://localhost:8000
 npm start                          # serves http://localhost:3000
 ```
 
@@ -101,9 +121,26 @@ Open http://localhost:3000, drag nodes onto the canvas, connect them, and click
 
 ---
 
+## Environment variables
+
+The same code runs locally and in production; only these variables change.
+Locally they live in `.env` files (gitignored — copy from `.env.example`); in
+production they are set in the Vercel / Railway dashboards.
+
+| Where    | Variable             | Local                   | Production                                  |
+| -------- | -------------------- | ----------------------- | ------------------------------------------- |
+| Frontend | `REACT_APP_API_URL`  | `http://localhost:8000` | your Railway backend URL                    |
+| Backend  | `ALLOWED_ORIGINS`    | `*`                     | your Vercel frontend URL (comma-separated)  |
+| Backend  | `PORT`               | `8000`                  | set automatically by Railway                |
+
+> `REACT_APP_API_URL` is embedded at **build time** (Create React App), so a
+> redeploy is required after changing it.
+
+---
+
 ## Testing
 
-**Backend**
+**Backend** (pytest)
 
 ```bash
 cd backend
@@ -111,7 +148,7 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-**Frontend**
+**Frontend** (Jest + React Testing Library)
 
 ```bash
 cd frontend
@@ -121,9 +158,74 @@ CI=true npm test                   # single run
 
 ---
 
+## Linting
+
+```bash
+cd backend && ruff check .         # Python
+cd frontend && npm run lint        # ESLint (fails on warnings)
+```
+
+---
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on GitHub Actions:
+
+- **On every push and PR:** backend tests (`pytest`) and frontend tests (`jest`).
+- **On pull requests:** backend lint (`ruff`) and frontend lint (`eslint`).
+
+To require these before merging, enable branch protection on `main`
+(**Settings → Branches**) and select the four checks as required.
+
+---
+
+## Deployment
+
+The frontend and backend deploy independently from the same `main` branch.
+
+### Backend → Railway
+
+1. New Project → **Deploy from GitHub repo**.
+2. Service **Settings → Root Directory** → set to `backend` (so Railway finds
+   `requirements.txt` and `Procfile`).
+3. **Variables** → add `ALLOWED_ORIGINS` = your Vercel URL. Do **not** set
+   `PORT` (Railway injects it).
+4. Deploy, then copy the public URL.
+
+The start command is defined in `backend/Procfile`:
+
+```
+web: uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+### Frontend → Vercel
+
+1. New Project → import the same repo.
+2. **Root Directory** → set to `frontend`.
+3. **Environment Variables** → `REACT_APP_API_URL` = the Railway URL (no
+   trailing slash).
+4. Deploy, then copy the Vercel URL.
+
+### Connect them (CORS)
+
+Set the backend's `ALLOWED_ORIGINS` to the **exact** Vercel origin and redeploy:
+
+```
+ALLOWED_ORIGINS = https://your-app.vercel.app
+```
+
+> CORS matching is exact — no trailing slash, no path, and `https://` (not
+> `http://`). A mismatch shows as "Could not reach the backend / Failed to
+> fetch" in the browser. Alternatively use `ALLOWED_ORIGINS=*`.
+
+**Recommended order:** deploy Railway first (to get the backend URL for Vercel),
+then Vercel, then update Railway's `ALLOWED_ORIGINS` with the Vercel URL.
+
+---
+
 ## API
 
-Base URL: `http://localhost:8000`
+Base URL: `http://localhost:8000` (local) — interactive docs at `/docs`.
 
 | Method | Path               | Description                          |
 | ------ | ------------------ | ------------------------------------ |
@@ -143,8 +245,6 @@ Response:
 ```json
 { "num_nodes": 3, "num_edges": 2, "is_dag": true }
 ```
-
-Interactive docs are available at `http://localhost:8000/docs`.
 
 ---
 
