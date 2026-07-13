@@ -5,7 +5,7 @@ import { createNode } from './BaseNode';
 
 export const LLMNode = createNode({
   title: 'LLM',
-  icon: '🤖',
+  icon: 'llm',
   fields: [
     {
       field: 'model',

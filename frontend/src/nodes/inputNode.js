@@ -5,7 +5,7 @@ import { createNode } from './BaseNode';
 
 export const InputNode = createNode(({ id }) => ({
   title: 'Input',
-  icon: '⬇️',
+  icon: 'input',
   fields: [
     {
       field: 'inputName',

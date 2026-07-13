@@ -6,7 +6,7 @@ import { createNode } from './BaseNode';
 
 export const DelayNode = createNode({
   title: 'Delay',
-  icon: '⏱️',
+  icon: 'delay',
   fields: [
     {
       field: 'seconds',

@@ -5,7 +5,7 @@ import { createNode } from './BaseNode';
 
 export const NoteNode = createNode({
   title: 'Note',
-  icon: '🗒️',
+  icon: 'note',
   fields: [
     {
       field: 'note',

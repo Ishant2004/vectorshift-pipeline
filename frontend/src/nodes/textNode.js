@@ -19,7 +19,7 @@ export const extractVariables = (text = '') => [
 
 export const TextNode = createNode({
   title: 'Text',
-  icon: '📝',
+  icon: 'text',
   fields: [
     {
       field: 'text',
