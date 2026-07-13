@@ -5,15 +5,15 @@ import { DraggableNode } from './draggableNode';
 // Single source of truth for the palette. Adding a node to the toolbar is now
 // one line here (mirrors how easy the Part 1 abstraction makes node creation).
 const NODES = [
-  { type: 'customInput', label: 'Input', icon: '⬇️' },
-  { type: 'llm', label: 'LLM', icon: '🤖' },
-  { type: 'customOutput', label: 'Output', icon: '⬆️' },
-  { type: 'text', label: 'Text', icon: '📝' },
-  { type: 'filter', label: 'Filter', icon: '🔍' },
-  { type: 'math', label: 'Math', icon: '🧮' },
-  { type: 'note', label: 'Note', icon: '🗒️' },
-  { type: 'api', label: 'API', icon: '🌐' },
-  { type: 'delay', label: 'Delay', icon: '⏱️' },
+  { type: 'customInput', label: 'Input', icon: 'input' },
+  { type: 'llm', label: 'LLM', icon: 'llm' },
+  { type: 'customOutput', label: 'Output', icon: 'output' },
+  { type: 'text', label: 'Text', icon: 'text' },
+  { type: 'filter', label: 'Filter', icon: 'filter' },
+  { type: 'math', label: 'Math', icon: 'math' },
+  { type: 'note', label: 'Note', icon: 'note' },
+  { type: 'api', label: 'API', icon: 'api' },
+  { type: 'delay', label: 'Delay', icon: 'delay' },
 ];
 
 export const PipelineToolbar = () => {

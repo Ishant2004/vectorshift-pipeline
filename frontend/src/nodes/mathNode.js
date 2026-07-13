@@ -7,7 +7,7 @@ import { createNode } from './BaseNode';
 
 export const MathNode = createNode({
   title: 'Math',
-  icon: '🧮',
+  icon: 'math',
   fields: [
     {
       field: 'operation',

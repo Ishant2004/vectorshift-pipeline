@@ -7,7 +7,7 @@ import { createNode } from './BaseNode';
 
 export const FilterNode = createNode({
   title: 'Filter',
-  icon: '🔍',
+  icon: 'filter',
   fields: [
     {
       field: 'condition',

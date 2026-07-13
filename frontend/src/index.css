@@ -17,7 +17,7 @@
 @layer components {
   /* Reusable form control shared by every node field. */
   .node-input {
-    @apply w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5
+    @apply w-full rounded-md border border-rule-dk bg-white px-2.5 py-1.5
            text-[13px] text-ink outline-none transition
            focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
   }
@@ -29,7 +29,7 @@
 
 /* React Flow overrides so the canvas matches the design system. */
 .react-flow__edge-path {
-  stroke: #818cf8;
+  stroke: #54585f;
   stroke-width: 2;
 }
 
@@ -46,4 +46,23 @@
   box-shadow: 0 4px 16px rgba(16, 24, 40, 0.06);
   border-radius: 8px;
   overflow: hidden;
+}
+
+/* Modal entrance animations. */
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.animate-overlay {
+  animation: overlayIn 0.15s ease-out;
+}
+
+.animate-card {
+  animation: cardIn 0.2s ease-out;
 }

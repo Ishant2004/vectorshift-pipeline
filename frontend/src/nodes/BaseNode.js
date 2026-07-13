@@ -46,6 +46,8 @@ import { Handle, useUpdateNodeInternals } from 'reactflow';
 import { useStore } from '../store';
 import { nodeClasses as c } from './nodeStyles';
 import { fieldId, fieldDataType, isRequired, validateField } from './fieldSchema';
+import { Dropdown } from './Dropdown';
+import { NodeIcon } from './icons';
 
 // --- Field value defaults --------------------------------------------------
 
@@ -119,17 +121,7 @@ const renderControl = (dataType, field, value, onChange, invalid) => {
   switch (dataType) {
     case 'enum':
       return (
-        <select className={inputCls} value={value} onChange={(e) => onChange(e.target.value)}>
-          {(field.options || []).map((opt) => {
-            const { value: v, label: l } =
-              typeof opt === 'string' ? { value: opt, label: opt } : opt;
-            return (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            );
-          })}
-        </select>
+        <Dropdown value={value} options={field.options} onChange={onChange} invalid={invalid} />
       );
     case 'text':
       return field.autoSize ? (
@@ -297,7 +289,7 @@ export const BaseNode = ({ id, data, config }) => {
 
       <div className={c.header}>
         <span className={c.accentBar} />
-        {icon && <span className={c.icon}>{icon}</span>}
+        {icon && <NodeIcon name={icon} className="h-4 w-4 shrink-0" />}
         <span>{title}</span>
       </div>
 
